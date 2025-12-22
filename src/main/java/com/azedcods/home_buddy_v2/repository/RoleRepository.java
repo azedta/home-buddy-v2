@@ -1,7 +1,7 @@
 package com.azedcods.home_buddy_v2.repository;
 
 
-import com.azedcods.home_buddy_v2.model.AppRole;
+import com.azedcods.home_buddy_v2.model.enums.AppRole;
 import com.azedcods.home_buddy_v2.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 

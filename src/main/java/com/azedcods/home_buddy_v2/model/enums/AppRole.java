@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.model;
+package com.azedcods.home_buddy_v2.model.enums;
 
 public enum AppRole {
     ROLE_USER,

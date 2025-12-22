@@ -1,5 +1,6 @@
 package com.azedcods.home_buddy_v2.model;
 
+import com.azedcods.home_buddy_v2.model.enums.AppRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
