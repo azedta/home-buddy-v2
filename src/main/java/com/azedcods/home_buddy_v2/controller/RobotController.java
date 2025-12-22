@@ -5,8 +5,8 @@ import com.azedcods.home_buddy_v2.payload.RobotDtos;
 import com.azedcods.home_buddy_v2.repository.RobotActivityRepository;
 import com.azedcods.home_buddy_v2.repository.RobotCommandRepository;
 import com.azedcods.home_buddy_v2.repository.RobotRepository;
-import com.azedcods.home_buddy_v2.service.RobotBootstrapService;
-import com.azedcods.home_buddy_v2.service.RobotCommandService;
+import com.azedcods.home_buddy_v2.service.robot.RobotBootstrapService;
+import com.azedcods.home_buddy_v2.service.robot.RobotCommandService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 

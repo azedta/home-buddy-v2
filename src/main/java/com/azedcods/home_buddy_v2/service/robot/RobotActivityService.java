@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.service;
+package com.azedcods.home_buddy_v2.service.robot;
 
 import com.azedcods.home_buddy_v2.model.Robot;
 import com.azedcods.home_buddy_v2.model.RobotActivity;
