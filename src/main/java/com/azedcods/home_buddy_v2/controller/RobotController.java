@@ -1,6 +1,6 @@
 package com.azedcods.home_buddy_v2.controller;
 
-import com.azedcods.home_buddy_v2.model.Robot;
+import com.azedcods.home_buddy_v2.model.robot.Robot;
 import com.azedcods.home_buddy_v2.payload.RobotDtos;
 import com.azedcods.home_buddy_v2.repository.RobotActivityRepository;
 import com.azedcods.home_buddy_v2.repository.RobotCommandRepository;

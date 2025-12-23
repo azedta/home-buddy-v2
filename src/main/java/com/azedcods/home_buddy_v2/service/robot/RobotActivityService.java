@@ -1,7 +1,7 @@
 package com.azedcods.home_buddy_v2.service.robot;
 
-import com.azedcods.home_buddy_v2.model.Robot;
-import com.azedcods.home_buddy_v2.model.RobotActivity;
+import com.azedcods.home_buddy_v2.model.robot.Robot;
+import com.azedcods.home_buddy_v2.model.robot.RobotActivity;
 import com.azedcods.home_buddy_v2.model.enums.*;
 import com.azedcods.home_buddy_v2.repository.RobotActivityRepository;
 import jakarta.transaction.Transactional;

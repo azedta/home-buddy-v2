@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.model;
+package com.azedcods.home_buddy_v2.model.robot;
 
 import com.azedcods.home_buddy_v2.model.enums.ActivitySeverity;
 import com.azedcods.home_buddy_v2.model.enums.ActivityType;
