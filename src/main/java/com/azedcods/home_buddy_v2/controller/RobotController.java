@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v2/robot")
+@RequestMapping("/api/robot")
 public class RobotController {
 
     private final RobotBootstrapService bootstrap;

@@ -37,10 +37,12 @@ public class RobotCommandService {
         RobotCommand cmd = new RobotCommand();
         cmd.setRobot(r);
         cmd.setCommandTime(Instant.now());
+        cmd.setActivityTime(Instant.now());
         cmd.setCommandType(type);
         cmd.setTargetLocation(targetLocation);
         cmd.setDescription(description != null ? description : type.name());
         cmd.setStatus(CommandStatus.EXECUTED);
+
 
         // Apply minimal “effect” to simulation so it looks real
         switch (type) {
