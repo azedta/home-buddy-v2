@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.model.enums;
+package com.azedcods.home_buddy_v2.enums;
 
 public enum CommandType {
     MOVE_TO_LOCATION,

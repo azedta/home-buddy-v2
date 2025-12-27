@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface RobotActivityRepository extends JpaRepository<RobotActivity, Long> {
 
-    List<RobotActivity> findByOrderByActivityTimeDesc(Pageable pageable);
+    List<RobotActivity> findByRobot_IdOrderByActivityTimeDesc(String robotId, Pageable pageable);
 
-    List<RobotActivity> findByOrderByActivityTimeAsc(Pageable pageable);
+    List<RobotActivity> findByRobot_IdOrderByActivityTimeAsc(String robotId, Pageable pageable);
 
-    long count();
+    long countByRobot_Id(String robotId);
 }

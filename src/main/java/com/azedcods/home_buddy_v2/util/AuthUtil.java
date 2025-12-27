@@ -1,7 +1,7 @@
 package com.azedcods.home_buddy_v2.util;
 
-import com.azedcods.home_buddy_v2.model.User;
-import com.azedcods.home_buddy_v2.repository.UserRepository;
+import com.azedcods.home_buddy_v2.model.auth.User;
+import com.azedcods.home_buddy_v2.repository.auth.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

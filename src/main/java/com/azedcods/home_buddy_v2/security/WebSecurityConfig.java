@@ -1,11 +1,11 @@
 package com.azedcods.home_buddy_v2.security;
 
 
-import com.azedcods.home_buddy_v2.model.enums.AppRole;
-import com.azedcods.home_buddy_v2.model.Role;
-import com.azedcods.home_buddy_v2.model.User;
-import com.azedcods.home_buddy_v2.repository.RoleRepository;
-import com.azedcods.home_buddy_v2.repository.UserRepository;
+import com.azedcods.home_buddy_v2.enums.AppRole;
+import com.azedcods.home_buddy_v2.model.auth.Role;
+import com.azedcods.home_buddy_v2.model.auth.User;
+import com.azedcods.home_buddy_v2.repository.auth.RoleRepository;
+import com.azedcods.home_buddy_v2.repository.auth.UserRepository;
 import com.azedcods.home_buddy_v2.security.jwt.AuthEntryPointJwt;
 import com.azedcods.home_buddy_v2.security.jwt.AuthTokenFilter;
 import com.azedcods.home_buddy_v2.security.services.UserDetailsServiceImpl;
@@ -18,7 +18,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -128,13 +127,7 @@ public class WebSecurityConfig {
             Set<Role> adminRoles = Set.of(userRole, caregiverRole, adminRole);
 
 
-            // Create users if not already present
-            if (!userRepository.existsByUserName("user1")) {
-                User user1 = new User("user1", "user1@example.com", passwordEncoder.encode("password1"));
-                user1.setFullname("Test User");
-                userRepository.save(user1);
-            }
-
+            // Create caregiver / admin if not already present
             if (!userRepository.existsByUserName("caregiver1")) {
                 User caregiver1 = new User("caregiver1", "caregiver1@example.com", passwordEncoder.encode("password2"));
                 caregiver1.setFullname("Test Caregiver");
@@ -148,11 +141,6 @@ public class WebSecurityConfig {
             }
 
             // Update roles for existing users
-            userRepository.findByUserName("user1").ifPresent(user -> {
-                user.setRoles(userRoles);
-                userRepository.save(user);
-            });
-
             userRepository.findByUserName("caregiver1").ifPresent(caregiver1 -> {
                 caregiver1.setRoles(caregiverRoles);
                 userRepository.save(caregiver1);

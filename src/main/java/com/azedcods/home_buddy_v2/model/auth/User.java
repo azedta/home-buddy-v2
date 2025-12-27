@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.model;
+package com.azedcods.home_buddy_v2.model.auth;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -7,5 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RobotCommandRepository extends JpaRepository<RobotCommand, Long> {
-    List<RobotCommand> findByOrderByCommandTimeDesc(Pageable pageable);
+
+    List<RobotCommand> findByRobot_IdOrderByCommandTimeDesc(String robotId, Pageable pageable);
+
+    long countByRobot_Id(String robotId);
 }

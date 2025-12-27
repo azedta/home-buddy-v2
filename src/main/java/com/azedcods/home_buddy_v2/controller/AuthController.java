@@ -1,16 +1,17 @@
 package com.azedcods.home_buddy_v2.controller;
 
-import com.azedcods.home_buddy_v2.model.enums.AppRole;
-import com.azedcods.home_buddy_v2.model.Role;
-import com.azedcods.home_buddy_v2.model.User;
-import com.azedcods.home_buddy_v2.repository.RoleRepository;
-import com.azedcods.home_buddy_v2.repository.UserRepository;
+import com.azedcods.home_buddy_v2.enums.AppRole;
+import com.azedcods.home_buddy_v2.model.auth.Role;
+import com.azedcods.home_buddy_v2.model.auth.User;
+import com.azedcods.home_buddy_v2.repository.auth.RoleRepository;
+import com.azedcods.home_buddy_v2.repository.auth.UserRepository;
 import com.azedcods.home_buddy_v2.security.jwt.JwtUtils;
 import com.azedcods.home_buddy_v2.security.request.LoginRequest;
 import com.azedcods.home_buddy_v2.security.request.SignupRequest;
 import com.azedcods.home_buddy_v2.security.response.MessageResponse;
 import com.azedcods.home_buddy_v2.security.response.UserInfoResponse;
 import com.azedcods.home_buddy_v2.security.services.UserDetailsImpl;
+import com.azedcods.home_buddy_v2.service.robot.RobotBootstrapService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -47,8 +48,12 @@ public class AuthController {
     @Autowired
     PasswordEncoder encoder;
 
+    @Autowired
+    private RobotBootstrapService robotBootstrapService;
+
+
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
@@ -61,7 +66,7 @@ public class AuthController {
             Map<String, Object> map = new HashMap<>();
             map.put("message", "Bad credentials");
             map.put("status", false);
-            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND); // keeping your current behavior
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -78,17 +83,15 @@ public class AuthController {
                 userDetails.getFullname(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles,
-                jwtCookie.toString()
+                roles
         );
-
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(response);
     }
 
-    @PostMapping("/signup")
+        @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUserName(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
@@ -109,8 +112,8 @@ public class AuthController {
         Set<Role> roles = resolveRoles(signUpRequest.getRole());
         user.setRoles(roles);
 
-        userRepository.save(user);
-
+        User saved = userRepository.save(user);
+        robotBootstrapService.getOrCreateRobotForUser(saved);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
@@ -173,5 +176,6 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
+
     }
 }

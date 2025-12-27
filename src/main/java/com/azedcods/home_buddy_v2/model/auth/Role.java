@@ -1,6 +1,6 @@
-package com.azedcods.home_buddy_v2.model;
+package com.azedcods.home_buddy_v2.model.auth;
 
-import com.azedcods.home_buddy_v2.model.enums.AppRole;
+import com.azedcods.home_buddy_v2.enums.AppRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
