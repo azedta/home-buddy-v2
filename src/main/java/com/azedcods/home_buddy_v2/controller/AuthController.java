@@ -152,11 +152,18 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserDetails(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof UserDetailsImpl userDetails)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
 
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+                .map(a -> a.getAuthority())
+                .toList();
 
         UserInfoResponse response = new UserInfoResponse(
                 userDetails.getId(),
@@ -166,9 +173,9 @@ public class AuthController {
                 roles
         );
 
-
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/signout")
     public ResponseEntity<?> signoutUser() {

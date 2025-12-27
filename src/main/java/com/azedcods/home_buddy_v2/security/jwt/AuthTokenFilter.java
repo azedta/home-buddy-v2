@@ -66,9 +66,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
 
-        // skip auth endpoints + preflight
+        // skip preflight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
-        return path.startsWith("/api/auth/");
+
+        // ONLY skip endpoints that must be public
+        return path.equals("/api/auth/signin")
+                || path.equals("/api/auth/signup");
     }
 }
 
