@@ -1,7 +1,7 @@
 package com.azedcods.home_buddy_v2.model;
 
-import com.azedcods.home_buddy_v2.model.enums.MedicationForm;
-import com.azedcods.home_buddy_v2.model.enums.MedicationSource;
+import com.azedcods.home_buddy_v2.enums.MedicationForm;
+import com.azedcods.home_buddy_v2.enums.MedicationSource;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,13 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name = "medication",
-        indexes = {
-                @Index(name = "idx_medication_name", columnList = "name"),
-                @Index(name = "idx_medication_source_external", columnList = "source, external_id", unique = true)
-        })
+@Table(
+        name = "medication",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_medication_source_external",
+                columnNames = {"source", "external_id"}
+        )
+)
 public class Medication {
 
     @Id
@@ -47,5 +49,5 @@ public class Medication {
     @Column(nullable = false)
     private boolean active = true;
 
-    // getters/setters
+
 }

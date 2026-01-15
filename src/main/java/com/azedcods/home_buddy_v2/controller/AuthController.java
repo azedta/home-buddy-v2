@@ -91,7 +91,7 @@ public class AuthController {
                 .body(response);
     }
 
-        @PostMapping("/signup")
+    @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUserName(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
@@ -113,9 +113,18 @@ public class AuthController {
         user.setRoles(roles);
 
         User saved = userRepository.save(user);
-        robotBootstrapService.getOrCreateRobotForUser(saved);
+
+        // ✅ Only ROLE_USER gets a robot (and therefore a dispenser)
+        boolean isRegularUser = roles.stream()
+                .anyMatch(r -> r.getRoleName() == com.azedcods.home_buddy_v2.enums.AppRole.ROLE_USER);
+
+        if (isRegularUser) {
+            robotBootstrapService.getOrCreateRobotForUser(saved);
+        }
+
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
 
     private Set<Role> resolveRoles(Set<String> strRoles) {
         Set<Role> roles = new HashSet<>();

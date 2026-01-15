@@ -1,6 +1,6 @@
 package com.azedcods.home_buddy_v2.controller;
 
-import com.azedcods.home_buddy_v2.model.Medication;
+import com.azedcods.home_buddy_v2.model.medication.Medication;
 import com.azedcods.home_buddy_v2.payload.MedicationDtos;
 import com.azedcods.home_buddy_v2.service.medication.MedicationAdminService;
 import com.azedcods.home_buddy_v2.service.medication.MedicationCatalogService;
