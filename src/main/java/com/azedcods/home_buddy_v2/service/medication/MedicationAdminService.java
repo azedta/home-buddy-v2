@@ -1,9 +1,9 @@
 package com.azedcods.home_buddy_v2.service.medication;
 
-import com.azedcods.home_buddy_v2.model.Medication;
-import com.azedcods.home_buddy_v2.model.enums.*;
+import com.azedcods.home_buddy_v2.enums.MedicationSource;
+import com.azedcods.home_buddy_v2.model.medication.Medication;
 import com.azedcods.home_buddy_v2.payload.MedicationDtos;
-import com.azedcods.home_buddy_v2.repository.MedicationRepository;
+import com.azedcods.home_buddy_v2.repository.medication.MedicationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
