@@ -1,17 +1,22 @@
 package com.azedcods.home_buddy_v2.model.robot;
 
 
-import com.azedcods.home_buddy_v2.model.enums.CommandStatus;
-import com.azedcods.home_buddy_v2.model.enums.CommandType;
+import com.azedcods.home_buddy_v2.enums.CommandStatus;
+import com.azedcods.home_buddy_v2.enums.CommandType;
+import com.azedcods.home_buddy_v2.enums.HouseLocation;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "robot_command", indexes = {
-        @Index(name = "idx_robot_command_time", columnList = "command_time")
-})
+@Table(
+        name="robot_command",
+        indexes = {
+                @Index(name="idx_command_robot_time", columnList="robot_id, command_time")
+        }
+)
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,12 +27,6 @@ public class RobotCommand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Robot robot;
-
-    @Column(name = "activity_time", nullable = false)
-    private Instant activityTime;
-
     @Column(name = "command_time", nullable = false)
     private Instant commandTime;
 
@@ -36,7 +35,7 @@ public class RobotCommand {
     private CommandType commandType;
 
     @Column(length = 120)
-    private String targetLocation;
+    private HouseLocation targetLocation;
 
     @Column(nullable = false, length = 300)
     private String description; // logged string you wanted
@@ -44,5 +43,10 @@ public class RobotCommand {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 15)
     private CommandStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "robot_id", nullable = false)
+    private Robot robot;
+
 
 }

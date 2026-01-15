@@ -1,6 +1,7 @@
 package com.azedcods.home_buddy_v2.model.robot;
 
-import com.azedcods.home_buddy_v2.model.enums.*;
+import com.azedcods.home_buddy_v2.enums.*;
+import com.azedcods.home_buddy_v2.model.auth.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,17 +12,30 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name="robot")
+@Table(
+        name="robot",
+        uniqueConstraints = @UniqueConstraint(
+                name="uk_robot_assisted_user",
+                columnNames="assisted_user_id"
+        ),
+        indexes = {
+                @Index(name="idx_robot_assisted_user", columnList="assisted_user_id")
+        }
+)
+
 public class Robot {
 
-    public static final String ROBOT_ID = "LEO-4523124-VAC";
-
     @Id
-    private String id = ROBOT_ID;
-
+    @Column(length = 32)
+    private String id;   // generated in service/bootstrap
 
     @Column(nullable = false)
-    private String robotName = "HomeBuddy-v1";
+    private String robotName = "HomeBuddy-v2";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assisted_user_id")
+    private User assistedUser;
+
 
     @Column(nullable = false)
     private Integer batteryLevel; // 0..100
@@ -53,10 +67,10 @@ public class Robot {
     private Integer dispenserPillsRemaining; // e.g. 0..30
 
     @Column(nullable = false, length = 80)
-    private String currentLocation; // "LIVING_ROOM", "KITCHEN"
+    private HouseLocation currentLocation; // "LIVING_ROOM", "KITCHEN"
 
     @Column(nullable = false, length = 80)
-    private String targetLocation; // where it’s going next
+    private HouseLocation targetLocation; // where it’s going next
 
     @Column(nullable = false)
     private Instant lastUpdatedAt;

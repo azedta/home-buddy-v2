@@ -1,16 +1,20 @@
 package com.azedcods.home_buddy_v2.model.robot;
 
-import com.azedcods.home_buddy_v2.model.enums.ActivitySeverity;
-import com.azedcods.home_buddy_v2.model.enums.ActivityType;
+import com.azedcods.home_buddy_v2.enums.ActivitySeverity;
+import com.azedcods.home_buddy_v2.enums.ActivityType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "robot_activity", indexes = {
-        @Index(name = "idx_robot_activity_time", columnList = "activity_time")
-})
+@Table(
+        name="robot_activity",
+        indexes = {
+                @Index(name="idx_activity_robot_time", columnList="robot_id, activity_time")
+        }
+)
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,9 +24,6 @@ public class RobotActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Robot robot;
 
     @Column(name = "activity_time", nullable = false)
     private Instant activityTime;
@@ -37,6 +38,11 @@ public class RobotActivity {
 
     @Column(nullable = false, length = 500)
     private String activityDescription;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "robot_id", nullable = false)
+    private Robot robot;
+
 
 
 }

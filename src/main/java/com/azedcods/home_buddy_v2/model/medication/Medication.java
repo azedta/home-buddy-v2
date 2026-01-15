@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.model;
+package com.azedcods.home_buddy_v2.model.medication;
 
 import com.azedcods.home_buddy_v2.enums.MedicationForm;
 import com.azedcods.home_buddy_v2.enums.MedicationSource;
