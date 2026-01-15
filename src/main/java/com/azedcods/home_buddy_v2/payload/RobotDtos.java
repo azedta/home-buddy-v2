@@ -1,14 +1,15 @@
 package com.azedcods.home_buddy_v2.payload;
 
-import com.azedcods.home_buddy_v2.model.enums.*;
+import com.azedcods.home_buddy_v2.enums.*;
 
 import java.time.Instant;
-
 
 public class RobotDtos {
 
     public record StatusResponse(
             String id,
+            String robotName,
+            Long assistedUserId,
             Integer batteryLevel,
             RobotStatus robotStatus,
             TrayStatus trayStatus,
@@ -17,8 +18,8 @@ public class RobotDtos {
             ToggleState dispenserStatus,
             FillLevel dispenserFillLevel,
             Integer dispenserPillsRemaining,
-            String currentLocation,
-            String targetLocation,
+            HouseLocation currentLocation,
+            HouseLocation targetLocation,
             Instant lastUpdatedAt
     ) {}
 
@@ -40,7 +41,7 @@ public class RobotDtos {
             Long id,
             Instant commandTime,
             CommandType commandType,
-            String targetLocation,
+            HouseLocation targetLocation,
             String description,
             CommandStatus status
     ) {}

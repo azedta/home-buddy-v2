@@ -1,7 +1,7 @@
 package com.azedcods.home_buddy_v2.payload;
 
-import com.azedcods.home_buddy_v2.model.enums.MedicationForm;
-import com.azedcods.home_buddy_v2.model.enums.MedicationSource;
+import com.azedcods.home_buddy_v2.enums.MedicationForm;
+import com.azedcods.home_buddy_v2.enums.MedicationSource;
 
 
 public class MedicationDtos {
