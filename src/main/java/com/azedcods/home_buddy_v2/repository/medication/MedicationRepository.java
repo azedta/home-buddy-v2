@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.repository;
+package com.azedcods.home_buddy_v2.repository.medication;
 
 import com.azedcods.home_buddy_v2.model.medication.Medication;
 import com.azedcods.home_buddy_v2.enums.MedicationSource;

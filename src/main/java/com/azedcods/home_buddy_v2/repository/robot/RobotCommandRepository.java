@@ -1,4 +1,4 @@
-package com.azedcods.home_buddy_v2.repository;
+package com.azedcods.home_buddy_v2.repository.robot;
 
 import com.azedcods.home_buddy_v2.model.robot.RobotCommand;
 import org.springframework.data.domain.Pageable;
