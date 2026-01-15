@@ -1,6 +1,5 @@
 package com.azedcods.home_buddy_v2.security;
 
-
 import com.azedcods.home_buddy_v2.enums.AppRole;
 import com.azedcods.home_buddy_v2.model.auth.Role;
 import com.azedcods.home_buddy_v2.model.auth.User;
@@ -13,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,14 +24,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity
+@EnableMethodSecurity
 public class WebSecurityConfig {
+
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
@@ -42,15 +46,12 @@ public class WebSecurityConfig {
         return new AuthTokenFilter();
     }
 
-
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        // In your Spring Security version, DaoAuthenticationProvider expects UserDetailsService in the constructor
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -62,8 +63,6 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -72,9 +71,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/user", "/api/auth/username").authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-
-                        // --- Swagger / OpenAPI (springdoc + older swagger-ui patterns) ---
+                        // --- Swagger / OpenAPI ---
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -85,11 +84,18 @@ public class WebSecurityConfig {
                                 "/configuration/ui",
                                 "/configuration/security"
                         ).permitAll()
+
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
+
+                        // ✅ Dose module: restrict by role at the route level
+                        // Users can still access their own via method-level checks (recommended).
+                        .requestMatchers("/api/doses/**").hasAnyRole("USER", "CAREGIVER", "ADMIN")
+                        .requestMatchers("/api/v2/dose-occurrences/**").hasAnyRole("USER", "CAREGIVER", "ADMIN")
+
                         .anyRequest().authenticated()
                 );
 
@@ -97,62 +103,65 @@ public class WebSecurityConfig {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+        http.cors(cors -> {});
 
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
     @Bean
-    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initData(RoleRepository roleRepository,
+                                      UserRepository userRepository,
+                                      PasswordEncoder passwordEncoder) {
         return args -> {
             // Retrieve or create roles
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
-                    .orElseGet(() -> {
-                        Role newUserRole = new Role(AppRole.ROLE_USER);
-                        return roleRepository.save(newUserRole);
-                    });
+                    .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_USER)));
 
             Role caregiverRole = roleRepository.findByRoleName(AppRole.ROLE_CAREGIVER)
-                    .orElseGet(() -> {
-                        Role newCaregiverRole = new Role(AppRole.ROLE_CAREGIVER);
-                        return roleRepository.save(newCaregiverRole);
-                    });
+                    .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_CAREGIVER)));
 
             Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
-                    .orElseGet(() -> {
-                        Role newAdminRole = new Role(AppRole.ROLE_ADMIN);
-                        return roleRepository.save(newAdminRole);
-                    });
+                    .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_ADMIN)));
 
-            Set<Role> userRoles = Set.of(userRole);
             Set<Role> caregiverRoles = Set.of(caregiverRole);
             Set<Role> adminRoles = Set.of(userRole, caregiverRole, adminRole);
 
-
-            // Create caregiver / admin if not already present
             if (!userRepository.existsByUserName("caregiver1")) {
                 User caregiver1 = new User("caregiver1", "caregiver1@example.com", passwordEncoder.encode("password2"));
                 caregiver1.setFullname("Test Caregiver");
+                caregiver1.setRoles(caregiverRoles);
                 userRepository.save(caregiver1);
             }
 
             if (!userRepository.existsByUserName("admin")) {
                 User admin = new User("admin", "admin@example.com", passwordEncoder.encode("adminPass"));
                 admin.setFullname("Admin");
+                admin.setRoles(adminRoles);
                 userRepository.save(admin);
             }
 
-            // Update roles for existing users
-            userRepository.findByUserName("caregiver1").ifPresent(caregiver1 -> {
-                caregiver1.setRoles(caregiverRoles);
-                userRepository.save(caregiver1);
+            // Ensure roles for existing users
+            userRepository.findByUserName("caregiver1").ifPresent(u -> {
+                u.setRoles(caregiverRoles);
+                userRepository.save(u);
             });
-
-            userRepository.findByUserName("admin").ifPresent(admin -> {
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
+            userRepository.findByUserName("admin").ifPresent(u -> {
+                u.setRoles(adminRoles);
+                userRepository.save(u);
             });
         };
     }
-
 }
