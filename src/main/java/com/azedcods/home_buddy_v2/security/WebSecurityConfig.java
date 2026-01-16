@@ -27,6 +27,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+
 
 import java.util.Set;
 
@@ -124,9 +127,12 @@ public class WebSecurityConfig {
     @Bean
     public CommandLineRunner initData(RoleRepository roleRepository,
                                       UserRepository userRepository,
-                                      PasswordEncoder passwordEncoder) {
-        return args -> {
-            // Retrieve or create roles
+                                      PasswordEncoder passwordEncoder,
+                                      PlatformTransactionManager txManager) {
+
+        TransactionTemplate tx = new TransactionTemplate(txManager);
+
+        return args -> tx.executeWithoutResult(status -> {
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
                     .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_USER)));
 
@@ -136,8 +142,9 @@ public class WebSecurityConfig {
             Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
                     .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_ADMIN)));
 
-            Set<Role> caregiverRoles = Set.of(caregiverRole);
-            Set<Role> adminRoles = Set.of(userRole, caregiverRole, adminRole);
+            // IMPORTANT: use mutable sets (Hibernate-friendly)
+            Set<Role> caregiverRoles = new java.util.HashSet<>(java.util.Set.of(caregiverRole));
+            Set<Role> adminRoles = new java.util.HashSet<>(java.util.Set.of(userRole, caregiverRole, adminRole));
 
             if (!userRepository.existsByUserName("caregiver1")) {
                 User caregiver1 = new User("caregiver1", "caregiver1@example.com", passwordEncoder.encode("password2"));
@@ -153,15 +160,16 @@ public class WebSecurityConfig {
                 userRepository.save(admin);
             }
 
-            // Ensure roles for existing users
             userRepository.findByUserName("caregiver1").ifPresent(u -> {
                 u.setRoles(caregiverRoles);
                 userRepository.save(u);
             });
+
             userRepository.findByUserName("admin").ifPresent(u -> {
                 u.setRoles(adminRoles);
                 userRepository.save(u);
             });
-        };
+        });
     }
+
 }
