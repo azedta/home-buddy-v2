@@ -116,6 +116,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("https://home-buddy-v2.vercel.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
